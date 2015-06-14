@@ -1,14 +1,40 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
+#include <string.h>
 
 int main(int argc, char **argv)
 {
+	int i;
+	char * mathematicalFunction = argv[1];
+	double args[argc -2];
+
+	for (i = 0; i < sizeof(mathematicalFunction); ++i)
+	{
+		mathematicalFunction[i] = tolower(mathematicalFunction[i]);
+	}
+
+	for (i = 2; i < argc; ++i)
+	{
+		double arg = atof(argv[i]);
+
+		args[i-2] = arg;
+		printf("argv %f\n", arg);
+	}
+
 	void *plugin;
 
 	printf("Loading the module\n");
 
-	plugin = dlopen("./justprinthi.so", RTLD_NOW);
+	char filename[5 + sizeof(mathematicalFunction)];
+
+	strcpy(filename, "./");
+	strcat(filename, mathematicalFunction);
+	strcat(filename, ".so");
+
+	printf("Attempting to load %s\n", filename);
+
+	plugin = dlopen(filename, RTLD_LAZY);
 
 	if(!plugin){
 		printf("fail!\n");
@@ -17,9 +43,9 @@ int main(int argc, char **argv)
 	}
 	printf("plugin loaded\n");
 
-	printf("Loading the 'main' method\n");
+	printf("Loading the 'Do' method\n");
 
-	int (*Do)();
+	double (*Do)(int, double[]);
 	Do = dlsym(plugin, "Do");
 	if(!Do){
 		printf("fail!\n");
@@ -31,5 +57,11 @@ int main(int argc, char **argv)
 
 	printf("** Executing **");
 
-	Do();
+	double result = Do(argc - 2, args);
+
+	printf("Result of operation: %f\n", result);
+
+	printf("Closing the plugin\n");
+
+	dlclose(plugin);
 }
