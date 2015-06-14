@@ -5,6 +5,15 @@
 
 int main(int argc, char **argv)
 {
+	if(argc <= 2)
+	{
+		printf("You have not provided enough arguments for this function.\n");
+		printf("The format is:\n./main <string:mathematicalFunction> <double:arg1> <double:arg2> (<double:arg3> ...)\n");
+		return(EXIT_FAILURE);
+	}
+
+	printf("Launched with %d arguments\n", argc);
+
 	int i;
 	char * mathematicalFunction = argv[1];
 	double args[argc -2];
