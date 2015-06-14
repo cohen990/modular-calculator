@@ -4,12 +4,11 @@
 
 int main(int argc, char **argv)
 {
-	printf("leftover error: %s\n", dlerror());
 	void *plugin;
 
 	printf("Loading the module\n");
 
-	plugin = dlopen("justprinthi.exe", RTLD_NOW);
+	plugin = dlopen("justprinthi.c", RTLD_NOW);
 
 	if(!plugin){
 		printf("fail!\n");
